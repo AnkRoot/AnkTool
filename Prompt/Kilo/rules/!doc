@@ -1,0 +1,6 @@
+.kilocode/
+└── rules/
+    ├── 00_constitution.md      # 司法管辖区: 架构师 (The Visionary)
+    ├── 01_tech_treatise.md     # 司法管辖区: 架构师 (The Visionary)
+    ├── 02_tactical_playbook.md # 司法管辖区: 知识守卫 (The Lorekeeper)
+    └── 99_changelog.md         # 司法管辖区: 知识守卫 (The Lorekeeper)
