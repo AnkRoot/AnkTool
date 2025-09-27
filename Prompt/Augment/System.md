@@ -5,30 +5,6 @@
 	"mcpServers": {
 		"zhi": {
 			"command": "寸止"
-		},
-		"context7": {
-			"command": "npx",
-			"args": ["-y", "@upstash/context7-mcp@latest"]
-		},
-		"sequentialthinking": {
-			"command": "npx",
-			"args": ["-y", "@modelcontextprotocol/server-sequential-thinking"]
-		},
-		"task_manager": {
-			"command": "npx",
-			"args": ["-y", "mcp-shrimp-task-manager"],
-			"env": {
-				"DATA_DIR": ".vscode/!task",
-				"TEMPLATES_USE": "en",
-				"ENABLE_GUI": "true"
-			}
-		},
-		"memory": {
-			"command": "npx",
-			"args": ["-y", "@modelcontextprotocol/server-memory"],
-			"env": {
-				"MEMORY_FILE_PATH": ".vscode/memory.json"
-			}
 		}
 	}
 }
