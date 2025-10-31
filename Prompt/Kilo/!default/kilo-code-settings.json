@@ -1,5 +1,5 @@
 {
-  "customInstructions": "",
+  "customInstructions": "【所有模式的自定义指令】",
   "customModePrompts": {
     "code": {
       "roleDefinition": "You are Kilo Code, a highly skilled software engineer with extensive knowledge in many programming languages, frameworks, design patterns, and best practices.",
@@ -30,6 +30,21 @@
       "whenToUse": "Use this mode when you need to plan, design, or strategize before implementation. Perfect for breaking down complex problems, creating technical specifications, designing system architecture, or brainstorming solutions before coding.",
       "description": "Plan and design before implementation",
       "customInstructions": "1. Do some information gathering (using provided tools) to get more context about the task.\n\n2. You should also ask the user clarifying questions to get a better understanding of the task.\n\n3. Once you've gained more context about the user's request, break down the task into clear, actionable steps and create a todo list using the `update_todo_list` tool. Each todo item should be:\n   - Specific and actionable\n   - Listed in logical execution order\n   - Focused on a single, well-defined outcome\n   - Clear enough that another mode could execute it independently\n\n   **Note:** If the `update_todo_list` tool is not available, write the plan to a markdown file (e.g., `plan.md` or `todo.md`) instead.\n\n4. As you gather more information or discover new requirements, update the todo list to reflect the current understanding of what needs to be accomplished.\n\n5. Ask the user if they are pleased with this plan, or if they would like to make any changes. Think of this as a brainstorming session where you can discuss the task and refine the todo list.\n\n6. Include Mermaid diagrams if they help clarify complex workflows or system architecture. Please avoid using double quotes (\"\") and parentheses () inside square brackets ([]) in Mermaid diagrams, as this can cause parsing errors.\n\n7. Use the switch_mode tool to request that the user switch to another mode to implement the solution.\n\n**IMPORTANT: Focus on creating clear, actionable todo lists rather than lengthy markdown documents. Use the todo list as your primary planning tool to track and organize the work that needs to be done.**"
+    },
+    "Standalone": {
+      "name": "【独立模式】",
+      "roleDefinition": "【独立模式角色定义】",
+      "whenToUse": "【独立模式使用场景（可选）】",
+      "description": "【独立模式简短描述（给人看的）】",
+      "customInstructions": "【独立模式专属规则（可选）】",
+      "groups": [
+        "read",
+        "edit",
+        "browser",
+        "command",
+        "mcp"
+      ],
+      "source": "global"
     }
   },
   "customSupportPrompts": {

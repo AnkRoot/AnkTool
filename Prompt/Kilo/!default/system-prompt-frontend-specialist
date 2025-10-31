@@ -710,70 +710,48 @@ The Model Context Protocol (MCP) enables communication between the system and MC
 
 When a server is connected, you can use the server's tools via the `use_mcp_tool` tool, and access the server's resources via the `access_mcp_resource` tool.
 
-## context7 (`npx -y @upstash/context7-mcp@latest`)
-
-### Instructions
-Use this server to retrieve up-to-date documentation and code examples for any library.
+## cometix-indexer (`npm --prefix /home/ank/AppBin/Cometix-Indexer run start`)
 
 ### Available Tools
-- resolve-library-id: Resolves a package/product name to a Context7-compatible library ID and returns a list of matching libraries.
-
-You MUST call this function before 'get-library-docs' to obtain a valid Context7-compatible library ID UNLESS the user explicitly provides a library ID in the format '/org/project' or '/org/project/version' in their query.
-
-Selection Process:
-1. Analyze the query to understand what library/package the user is looking for
-2. Return the most relevant match based on:
-- Name similarity to the query (exact matches prioritized)
-- Description relevance to the query's intent
-- Documentation coverage (prioritize libraries with higher Code Snippet counts)
-- Trust score (consider libraries with scores of 7-10 more authoritative)
-
-Response Format:
-- Return the selected library ID in a clearly marked section
-- Provide a brief explanation for why this library was chosen
-- If multiple good matches exist, acknowledge this but proceed with the most relevant one
-- If no good matches exist, clearly state this and suggest query refinements
-
-For ambiguous queries, request clarification before proceeding with a best-guess match.
+- index_project: Creates or updates a semantic index of the codebase for a given project directory. This is a necessary first step before using `semantic_search`. The indexing process is optimized to be run once; it will then automatically keep the index in sync with file changes. Call this tool to prepare a new project for searching.
     Input Schema:
 		{
       "type": "object",
       "properties": {
-        "libraryName": {
-          "type": "string",
-          "description": "Library name to search for and retrieve a Context7-compatible library ID."
+        "workspacePath": {
+          "type": "string"
+        },
+        "verbose": {
+          "type": "boolean"
         }
       },
       "required": [
-        "libraryName"
-      ],
-      "additionalProperties": false,
-      "$schema": "http://json-schema.org/draft-07/schema#"
+        "workspacePath"
+      ]
     }
 
-- get-library-docs: Fetches up-to-date documentation for a library. You must call 'resolve-library-id' first to obtain the exact Context7-compatible library ID required to use this tool, UNLESS the user explicitly provides a library ID in the format '/org/project' or '/org/project/version' in their query.
+- codebase_search: Searches the indexed codebase to find code snippets most relevant to a natural language query. This is a semantic search tool, so the query should describe the desired functionality or concept. For best results, use the user's exact phrasing for the `query`, as their specific wording often contains valuable semantic cues. If the search should be limited to specific files or directories, use the `paths_include_glob` and `paths_exclude_glob` parameters to scope the search. Ensure the project has been indexed with `index_project` first.
     Input Schema:
 		{
       "type": "object",
       "properties": {
-        "context7CompatibleLibraryID": {
-          "type": "string",
-          "description": "Exact Context7-compatible library ID (e.g., '/mongodb/docs', '/vercel/next.js', '/supabase/supabase', '/vercel/next.js/v14.3.0-canary.87') retrieved from 'resolve-library-id' or directly from user query in the format '/org/project' or '/org/project/version'."
+        "query": {
+          "type": "string"
         },
-        "topic": {
-          "type": "string",
-          "description": "Topic to focus documentation on (e.g., 'hooks', 'routing')."
+        "paths_include_glob": {
+          "type": "string"
         },
-        "tokens": {
-          "type": "number",
-          "description": "Maximum number of tokens of documentation to retrieve (default: 5000). Higher values provide more context but consume more tokens."
+        "paths_exclude_glob": {
+          "type": "string"
+        },
+        "max_results": {
+          "type": "integer",
+          "minimum": 1
         }
       },
       "required": [
-        "context7CompatibleLibraryID"
-      ],
-      "additionalProperties": false,
-      "$schema": "http://json-schema.org/draft-07/schema#"
+        "query"
+      ]
     }
 
 ## sequentialthinking (`npx -y @modelcontextprotocol/server-sequential-thinking`)
@@ -885,6 +863,438 @@ You should:
         "totalThoughts"
       ]
     }
+
+## context7 (`npx -y @upstash/context7-mcp@latest`)
+
+### Instructions
+Use this server to retrieve up-to-date documentation and code examples for any library.
+
+### Available Tools
+- resolve-library-id: Resolves a package/product name to a Context7-compatible library ID and returns a list of matching libraries.
+
+You MUST call this function before 'get-library-docs' to obtain a valid Context7-compatible library ID UNLESS the user explicitly provides a library ID in the format '/org/project' or '/org/project/version' in their query.
+
+Selection Process:
+1. Analyze the query to understand what library/package the user is looking for
+2. Return the most relevant match based on:
+- Name similarity to the query (exact matches prioritized)
+- Description relevance to the query's intent
+- Documentation coverage (prioritize libraries with higher Code Snippet counts)
+- Trust score (consider libraries with scores of 7-10 more authoritative)
+
+Response Format:
+- Return the selected library ID in a clearly marked section
+- Provide a brief explanation for why this library was chosen
+- If multiple good matches exist, acknowledge this but proceed with the most relevant one
+- If no good matches exist, clearly state this and suggest query refinements
+
+For ambiguous queries, request clarification before proceeding with a best-guess match.
+    Input Schema:
+		{
+      "type": "object",
+      "properties": {
+        "libraryName": {
+          "type": "string",
+          "description": "Library name to search for and retrieve a Context7-compatible library ID."
+        }
+      },
+      "required": [
+        "libraryName"
+      ],
+      "additionalProperties": false,
+      "$schema": "http://json-schema.org/draft-07/schema#"
+    }
+
+- get-library-docs: Fetches up-to-date documentation for a library. You must call 'resolve-library-id' first to obtain the exact Context7-compatible library ID required to use this tool, UNLESS the user explicitly provides a library ID in the format '/org/project' or '/org/project/version' in their query.
+    Input Schema:
+		{
+      "type": "object",
+      "properties": {
+        "context7CompatibleLibraryID": {
+          "type": "string",
+          "description": "Exact Context7-compatible library ID (e.g., '/mongodb/docs', '/vercel/next.js', '/supabase/supabase', '/vercel/next.js/v14.3.0-canary.87') retrieved from 'resolve-library-id' or directly from user query in the format '/org/project' or '/org/project/version'."
+        },
+        "topic": {
+          "type": "string",
+          "description": "Topic to focus documentation on (e.g., 'hooks', 'routing')."
+        },
+        "tokens": {
+          "type": "number",
+          "description": "Maximum number of tokens of documentation to retrieve (default: 5000). Higher values provide more context but consume more tokens."
+        }
+      },
+      "required": [
+        "context7CompatibleLibraryID"
+      ],
+      "additionalProperties": false,
+      "$schema": "http://json-schema.org/draft-07/schema#"
+    }
+
+## code-reasoning (`npx -y @mettamatt/code-reasoning`)
+
+### Available Tools
+- code-reasoning: 🧠 A detailed tool for dynamic and reflective problem-solving through sequential thinking.
+
+This tool helps you analyze problems through a flexible thinking process that can adapt and evolve.
+Each thought can build on, question, or revise previous insights as understanding deepens.
+
+📋 KEY PARAMETERS:
+- thought: Your current reasoning step (required)
+- thought_number: Current number in sequence (required)
+- total_thoughts: Estimated final count (required, can adjust as needed)
+- next_thought_needed: Set to FALSE ONLY when completely done (required)
+- branch_from_thought + branch_id: When exploring alternative approaches (🌿)
+- is_revision + revises_thought: When correcting earlier thinking (🔄)
+
+✅ CRITICAL CHECKLIST (review every 3 thoughts):
+1. Need to explore alternatives? → Use BRANCH (🌿) with branch_from_thought + branch_id
+2. Need to correct earlier thinking? → Use REVISION (🔄) with is_revision + revises_thought
+3. Scope changed? → Adjust total_thoughts up or down as needed
+4. Only set next_thought_needed = false when you have a complete, verified solution
+
+💡 BEST PRACTICES:
+- Start with an initial estimate of total_thoughts, but adjust as you go
+- Don't hesitate to revise earlier conclusions when new insights emerge
+- Use branching to explore multiple approaches to the same problem
+- Express uncertainty when present
+- Ignore information that is irrelevant to the current step
+- End with a clear, validated conclusion before setting next_thought_needed = false
+
+✍️ End each thought by asking: "What am I missing or need to reconsider?"
+    Input Schema:
+		{
+      "type": "object",
+      "properties": {
+        "thought": {
+          "type": "string"
+        },
+        "thought_number": {
+          "type": "integer"
+        },
+        "total_thoughts": {
+          "type": "integer"
+        },
+        "next_thought_needed": {
+          "type": "boolean"
+        },
+        "is_revision": {
+          "type": "boolean"
+        },
+        "revises_thought": {
+          "type": "integer"
+        },
+        "branch_from_thought": {
+          "type": "integer"
+        },
+        "branch_id": {
+          "type": "string"
+        },
+        "needs_more_thoughts": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "thought",
+        "thought_number",
+        "total_thoughts",
+        "next_thought_needed"
+      ],
+      "additionalProperties": false,
+      "$schema": "http://json-schema.org/draft-07/schema#"
+    }
+
+## filesystem (`npx -y @modelcontextprotocol/server-filesystem /home/ank/Project/`)
+
+### Available Tools
+- read_file: Read the complete contents of a file as text. DEPRECATED: Use read_text_file instead.
+    Input Schema:
+		{
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "string"
+        },
+        "tail": {
+          "type": "number",
+          "description": "If provided, returns only the last N lines of the file"
+        },
+        "head": {
+          "type": "number",
+          "description": "If provided, returns only the first N lines of the file"
+        }
+      },
+      "required": [
+        "path"
+      ],
+      "additionalProperties": false,
+      "$schema": "http://json-schema.org/draft-07/schema#"
+    }
+
+- read_text_file: Read the complete contents of a file from the file system as text. Handles various text encodings and provides detailed error messages if the file cannot be read. Use this tool when you need to examine the contents of a single file. Use the 'head' parameter to read only the first N lines of a file, or the 'tail' parameter to read only the last N lines of a file. Operates on the file as text regardless of extension. Only works within allowed directories.
+    Input Schema:
+		{
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "string"
+        },
+        "tail": {
+          "type": "number",
+          "description": "If provided, returns only the last N lines of the file"
+        },
+        "head": {
+          "type": "number",
+          "description": "If provided, returns only the first N lines of the file"
+        }
+      },
+      "required": [
+        "path"
+      ],
+      "additionalProperties": false,
+      "$schema": "http://json-schema.org/draft-07/schema#"
+    }
+
+- read_media_file: Read an image or audio file. Returns the base64 encoded data and MIME type. Only works within allowed directories.
+    Input Schema:
+		{
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "path"
+      ],
+      "additionalProperties": false,
+      "$schema": "http://json-schema.org/draft-07/schema#"
+    }
+
+- read_multiple_files: Read the contents of multiple files simultaneously. This is more efficient than reading files one by one when you need to analyze or compare multiple files. Each file's content is returned with its path as a reference. Failed reads for individual files won't stop the entire operation. Only works within allowed directories.
+    Input Schema:
+		{
+      "type": "object",
+      "properties": {
+        "paths": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "paths"
+      ],
+      "additionalProperties": false,
+      "$schema": "http://json-schema.org/draft-07/schema#"
+    }
+
+- write_file: Create a new file or completely overwrite an existing file with new content. Use with caution as it will overwrite existing files without warning. Handles text content with proper encoding. Only works within allowed directories.
+    Input Schema:
+		{
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "string"
+        },
+        "content": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "path",
+        "content"
+      ],
+      "additionalProperties": false,
+      "$schema": "http://json-schema.org/draft-07/schema#"
+    }
+
+- edit_file: Make line-based edits to a text file. Each edit replaces exact line sequences with new content. Returns a git-style diff showing the changes made. Only works within allowed directories.
+    Input Schema:
+		{
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "string"
+        },
+        "edits": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "oldText": {
+                "type": "string",
+                "description": "Text to search for - must match exactly"
+              },
+              "newText": {
+                "type": "string",
+                "description": "Text to replace with"
+              }
+            },
+            "required": [
+              "oldText",
+              "newText"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "dryRun": {
+          "type": "boolean",
+          "default": false,
+          "description": "Preview changes using git-style diff format"
+        }
+      },
+      "required": [
+        "path",
+        "edits"
+      ],
+      "additionalProperties": false,
+      "$schema": "http://json-schema.org/draft-07/schema#"
+    }
+
+- create_directory: Create a new directory or ensure a directory exists. Can create multiple nested directories in one operation. If the directory already exists, this operation will succeed silently. Perfect for setting up directory structures for projects or ensuring required paths exist. Only works within allowed directories.
+    Input Schema:
+		{
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "path"
+      ],
+      "additionalProperties": false,
+      "$schema": "http://json-schema.org/draft-07/schema#"
+    }
+
+- list_directory: Get a detailed listing of all files and directories in a specified path. Results clearly distinguish between files and directories with [FILE] and [DIR] prefixes. This tool is essential for understanding directory structure and finding specific files within a directory. Only works within allowed directories.
+    Input Schema:
+		{
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "path"
+      ],
+      "additionalProperties": false,
+      "$schema": "http://json-schema.org/draft-07/schema#"
+    }
+
+- list_directory_with_sizes: Get a detailed listing of all files and directories in a specified path, including sizes. Results clearly distinguish between files and directories with [FILE] and [DIR] prefixes. This tool is useful for understanding directory structure and finding specific files within a directory. Only works within allowed directories.
+    Input Schema:
+		{
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "string"
+        },
+        "sortBy": {
+          "type": "string",
+          "enum": [
+            "name",
+            "size"
+          ],
+          "default": "name",
+          "description": "Sort entries by name or size"
+        }
+      },
+      "required": [
+        "path"
+      ],
+      "additionalProperties": false,
+      "$schema": "http://json-schema.org/draft-07/schema#"
+    }
+
+- directory_tree: Get a recursive tree view of files and directories as a JSON structure. Each entry includes 'name', 'type' (file/directory), and 'children' for directories. Files have no children array, while directories always have a children array (which may be empty). The output is formatted with 2-space indentation for readability. Only works within allowed directories.
+    Input Schema:
+		{
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "path"
+      ],
+      "additionalProperties": false,
+      "$schema": "http://json-schema.org/draft-07/schema#"
+    }
+
+- move_file: Move or rename files and directories. Can move files between directories and rename them in a single operation. If the destination exists, the operation will fail. Works across different directories and can be used for simple renaming within the same directory. Both source and destination must be within allowed directories.
+    Input Schema:
+		{
+      "type": "object",
+      "properties": {
+        "source": {
+          "type": "string"
+        },
+        "destination": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "source",
+        "destination"
+      ],
+      "additionalProperties": false,
+      "$schema": "http://json-schema.org/draft-07/schema#"
+    }
+
+- search_files: Recursively search for files and directories matching a pattern. Searches through all subdirectories from the starting path. The search is case-insensitive and matches partial names. Returns full paths to all matching items. Great for finding files when you don't know their exact location. Only searches within allowed directories.
+    Input Schema:
+		{
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "string"
+        },
+        "pattern": {
+          "type": "string"
+        },
+        "excludePatterns": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": []
+        }
+      },
+      "required": [
+        "path",
+        "pattern"
+      ],
+      "additionalProperties": false,
+      "$schema": "http://json-schema.org/draft-07/schema#"
+    }
+
+- get_file_info: Retrieve detailed metadata about a file or directory. Returns comprehensive information including size, creation time, last modified time, permissions, and type. This tool is perfect for understanding file characteristics without reading the actual content. Only works within allowed directories.
+    Input Schema:
+		{
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "path"
+      ],
+      "additionalProperties": false,
+      "$schema": "http://json-schema.org/draft-07/schema#"
+    }
+
+- list_allowed_directories: Returns the list of directories that this server is allowed to access. Subdirectories within these allowed directories are also accessible. Use this to understand which directories and their nested paths are available before trying to access files.
+    Input Schema:
+		{
+      "type": "object",
+      "properties": {},
+      "required": []
+    }
 ## Creating an MCP Server
 
 The user may ask you something along the lines of "add a tool" that does some function, in other words to create an MCP server that provides tools and resources that may connect to external APIs for example. If they do, you should obtain detailed instructions on this topic using the fetch_instructions tool, like this:
@@ -917,12 +1327,11 @@ MODES
   * "Ask" mode (ask) - Use this mode when you need explanations, documentation, or answers to technical questions. Best for understanding concepts, analyzing existing code, getting recommendations, or learning about technologies without making changes.
   * "Debug" mode (debug) - Use this mode when you're troubleshooting issues, investigating errors, or diagnosing problems. Specialized in systematic debugging, adding logging, analyzing stack traces, and identifying root causes before applying fixes.
   * "Orchestrator" mode (orchestrator) - Use this mode for complex, multi-step projects that require coordination across different specialties. Ideal when you need to break down large tasks into subtasks, manage workflows, or coordinate work that spans multiple domains or expertise areas.
-  * "【独立模式】" mode (11111) - 【独立模式使用场景（可选）】
+  * "【独立模式】" mode (Standalone) - 【独立模式使用场景（可选）】
 If the user asks you to create or edit a new mode for this project, you should read the instructions by using the fetch_instructions tool, like this:
 <fetch_instructions>
 <task>create_mode</task>
 </fetch_instructions>
-
 
 ====
 
