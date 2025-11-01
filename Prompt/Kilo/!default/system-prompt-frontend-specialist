@@ -754,182 +754,6 @@ When a server is connected, you can use the server's tools via the `use_mcp_tool
       ]
     }
 
-## sequentialthinking (`npx -y @modelcontextprotocol/server-sequential-thinking`)
-
-### Available Tools
-- sequentialthinking: A detailed tool for dynamic and reflective problem-solving through thoughts.
-This tool helps analyze problems through a flexible thinking process that can adapt and evolve.
-Each thought can build on, question, or revise previous insights as understanding deepens.
-
-When to use this tool:
-- Breaking down complex problems into steps
-- Planning and design with room for revision
-- Analysis that might need course correction
-- Problems where the full scope might not be clear initially
-- Problems that require a multi-step solution
-- Tasks that need to maintain context over multiple steps
-- Situations where irrelevant information needs to be filtered out
-
-Key features:
-- You can adjust total_thoughts up or down as you progress
-- You can question or revise previous thoughts
-- You can add more thoughts even after reaching what seemed like the end
-- You can express uncertainty and explore alternative approaches
-- Not every thought needs to build linearly - you can branch or backtrack
-- Generates a solution hypothesis
-- Verifies the hypothesis based on the Chain of Thought steps
-- Repeats the process until satisfied
-- Provides a correct answer
-
-Parameters explained:
-- thought: Your current thinking step, which can include:
-* Regular analytical steps
-* Revisions of previous thoughts
-* Questions about previous decisions
-* Realizations about needing more analysis
-* Changes in approach
-* Hypothesis generation
-* Hypothesis verification
-- next_thought_needed: True if you need more thinking, even if at what seemed like the end
-- thought_number: Current number in sequence (can go beyond initial total if needed)
-- total_thoughts: Current estimate of thoughts needed (can be adjusted up/down)
-- is_revision: A boolean indicating if this thought revises previous thinking
-- revises_thought: If is_revision is true, which thought number is being reconsidered
-- branch_from_thought: If branching, which thought number is the branching point
-- branch_id: Identifier for the current branch (if any)
-- needs_more_thoughts: If reaching end but realizing more thoughts needed
-
-You should:
-1. Start with an initial estimate of needed thoughts, but be ready to adjust
-2. Feel free to question or revise previous thoughts
-3. Don't hesitate to add more thoughts if needed, even at the "end"
-4. Express uncertainty when present
-5. Mark thoughts that revise previous thinking or branch into new paths
-6. Ignore information that is irrelevant to the current step
-7. Generate a solution hypothesis when appropriate
-8. Verify the hypothesis based on the Chain of Thought steps
-9. Repeat the process until satisfied with the solution
-10. Provide a single, ideally correct answer as the final output
-11. Only set next_thought_needed to false when truly done and a satisfactory answer is reached
-    Input Schema:
-		{
-      "type": "object",
-      "properties": {
-        "thought": {
-          "type": "string",
-          "description": "Your current thinking step"
-        },
-        "nextThoughtNeeded": {
-          "type": "boolean",
-          "description": "Whether another thought step is needed"
-        },
-        "thoughtNumber": {
-          "type": "integer",
-          "description": "Current thought number",
-          "minimum": 1
-        },
-        "totalThoughts": {
-          "type": "integer",
-          "description": "Estimated total thoughts needed",
-          "minimum": 1
-        },
-        "isRevision": {
-          "type": "boolean",
-          "description": "Whether this revises previous thinking"
-        },
-        "revisesThought": {
-          "type": "integer",
-          "description": "Which thought is being reconsidered",
-          "minimum": 1
-        },
-        "branchFromThought": {
-          "type": "integer",
-          "description": "Branching point thought number",
-          "minimum": 1
-        },
-        "branchId": {
-          "type": "string",
-          "description": "Branch identifier"
-        },
-        "needsMoreThoughts": {
-          "type": "boolean",
-          "description": "If more thoughts are needed"
-        }
-      },
-      "required": [
-        "thought",
-        "nextThoughtNeeded",
-        "thoughtNumber",
-        "totalThoughts"
-      ]
-    }
-
-## context7 (`npx -y @upstash/context7-mcp@latest`)
-
-### Instructions
-Use this server to retrieve up-to-date documentation and code examples for any library.
-
-### Available Tools
-- resolve-library-id: Resolves a package/product name to a Context7-compatible library ID and returns a list of matching libraries.
-
-You MUST call this function before 'get-library-docs' to obtain a valid Context7-compatible library ID UNLESS the user explicitly provides a library ID in the format '/org/project' or '/org/project/version' in their query.
-
-Selection Process:
-1. Analyze the query to understand what library/package the user is looking for
-2. Return the most relevant match based on:
-- Name similarity to the query (exact matches prioritized)
-- Description relevance to the query's intent
-- Documentation coverage (prioritize libraries with higher Code Snippet counts)
-- Trust score (consider libraries with scores of 7-10 more authoritative)
-
-Response Format:
-- Return the selected library ID in a clearly marked section
-- Provide a brief explanation for why this library was chosen
-- If multiple good matches exist, acknowledge this but proceed with the most relevant one
-- If no good matches exist, clearly state this and suggest query refinements
-
-For ambiguous queries, request clarification before proceeding with a best-guess match.
-    Input Schema:
-		{
-      "type": "object",
-      "properties": {
-        "libraryName": {
-          "type": "string",
-          "description": "Library name to search for and retrieve a Context7-compatible library ID."
-        }
-      },
-      "required": [
-        "libraryName"
-      ],
-      "additionalProperties": false,
-      "$schema": "http://json-schema.org/draft-07/schema#"
-    }
-
-- get-library-docs: Fetches up-to-date documentation for a library. You must call 'resolve-library-id' first to obtain the exact Context7-compatible library ID required to use this tool, UNLESS the user explicitly provides a library ID in the format '/org/project' or '/org/project/version' in their query.
-    Input Schema:
-		{
-      "type": "object",
-      "properties": {
-        "context7CompatibleLibraryID": {
-          "type": "string",
-          "description": "Exact Context7-compatible library ID (e.g., '/mongodb/docs', '/vercel/next.js', '/supabase/supabase', '/vercel/next.js/v14.3.0-canary.87') retrieved from 'resolve-library-id' or directly from user query in the format '/org/project' or '/org/project/version'."
-        },
-        "topic": {
-          "type": "string",
-          "description": "Topic to focus documentation on (e.g., 'hooks', 'routing')."
-        },
-        "tokens": {
-          "type": "number",
-          "description": "Maximum number of tokens of documentation to retrieve (default: 5000). Higher values provide more context but consume more tokens."
-        }
-      },
-      "required": [
-        "context7CompatibleLibraryID"
-      ],
-      "additionalProperties": false,
-      "$schema": "http://json-schema.org/draft-07/schema#"
-    }
-
 ## code-reasoning (`npx -y @mettamatt/code-reasoning`)
 
 ### Available Tools
@@ -1003,7 +827,73 @@ Each thought can build on, question, or revise previous insights as understandin
       "$schema": "http://json-schema.org/draft-07/schema#"
     }
 
-## filesystem (`npx -y @modelcontextprotocol/server-filesystem /home/ank/Project/`)
+## context7 (`npx -y @upstash/context7-mcp@latest`)
+
+### Instructions
+Use this server to retrieve up-to-date documentation and code examples for any library.
+
+### Available Tools
+- resolve-library-id: Resolves a package/product name to a Context7-compatible library ID and returns a list of matching libraries.
+
+You MUST call this function before 'get-library-docs' to obtain a valid Context7-compatible library ID UNLESS the user explicitly provides a library ID in the format '/org/project' or '/org/project/version' in their query.
+
+Selection Process:
+1. Analyze the query to understand what library/package the user is looking for
+2. Return the most relevant match based on:
+- Name similarity to the query (exact matches prioritized)
+- Description relevance to the query's intent
+- Documentation coverage (prioritize libraries with higher Code Snippet counts)
+- Trust score (consider libraries with scores of 7-10 more authoritative)
+
+Response Format:
+- Return the selected library ID in a clearly marked section
+- Provide a brief explanation for why this library was chosen
+- If multiple good matches exist, acknowledge this but proceed with the most relevant one
+- If no good matches exist, clearly state this and suggest query refinements
+
+For ambiguous queries, request clarification before proceeding with a best-guess match.
+    Input Schema:
+		{
+      "type": "object",
+      "properties": {
+        "libraryName": {
+          "type": "string",
+          "description": "Library name to search for and retrieve a Context7-compatible library ID."
+        }
+      },
+      "required": [
+        "libraryName"
+      ],
+      "additionalProperties": false,
+      "$schema": "http://json-schema.org/draft-07/schema#"
+    }
+
+- get-library-docs: Fetches up-to-date documentation for a library. You must call 'resolve-library-id' first to obtain the exact Context7-compatible library ID required to use this tool, UNLESS the user explicitly provides a library ID in the format '/org/project' or '/org/project/version' in their query.
+    Input Schema:
+		{
+      "type": "object",
+      "properties": {
+        "context7CompatibleLibraryID": {
+          "type": "string",
+          "description": "Exact Context7-compatible library ID (e.g., '/mongodb/docs', '/vercel/next.js', '/supabase/supabase', '/vercel/next.js/v14.3.0-canary.87') retrieved from 'resolve-library-id' or directly from user query in the format '/org/project' or '/org/project/version'."
+        },
+        "topic": {
+          "type": "string",
+          "description": "Topic to focus documentation on (e.g., 'hooks', 'routing')."
+        },
+        "tokens": {
+          "type": "number",
+          "description": "Maximum number of tokens of documentation to retrieve (default: 5000). Higher values provide more context but consume more tokens."
+        }
+      },
+      "required": [
+        "context7CompatibleLibraryID"
+      ],
+      "additionalProperties": false,
+      "$schema": "http://json-schema.org/draft-07/schema#"
+    }
+
+## filesystem (`npx -y @modelcontextprotocol/server-filesystem /home/ank/Project/ /home/ank/Project/Personal/AnkRoot /home/ank/Project/Personal/Web/Nav /home/ank/Project/Personal/AnkRoot/PingMail`)
 
 ### Available Tools
 - read_file: Read the complete contents of a file as text. DEPRECATED: Use read_text_file instead.
